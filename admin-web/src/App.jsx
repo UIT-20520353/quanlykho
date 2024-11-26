@@ -2,6 +2,8 @@ import MainLayout from "@/components/layout/main-layout";
 import CategoryManagement from "@/features/category";
 import Dashboard from "@/features/dashboard";
 import ImportManagement from "@/features/import";
+import CreateImportRecord from "@/features/import/pages/create-import-record";
+import UpdateImportRecord from "@/features/import/pages/update-import-record";
 import Login from "@/features/login";
 import OrderManagement from "@/features/order";
 import CreateOrder from "@/features/order/pages/create-order";
@@ -27,6 +29,8 @@ const App = () => {
         <Route path="/products" element={<ProductManagement />} />
         <Route path="/orders" element={<OrderManagement />} />
         <Route path="/orders/create" element={<CreateOrder />} />
+        <Route path="/import/create" element={<CreateImportRecord />} />
+        <Route path="/import/:id" element={<UpdateImportRecord />} />
         <Route path="/import" element={<ImportManagement />} />
         <Route index element={<Dashboard />} />
       </Route>

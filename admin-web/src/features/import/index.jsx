@@ -1,3 +1,4 @@
+import importApi from "@/api/importApi";
 import Table from "@/components/table/table";
 import TableDataColumn from "@/components/table/table-data-column";
 import TableHeaderColumn from "@/components/table/table-header-column";
@@ -7,12 +8,11 @@ import useHandleResponseError from "@/hooks/useHandleResponseError";
 import useHandleResponseSuccess from "@/hooks/useHandleResponseSuccess";
 import { decrementLoading, incrementLoading } from "@/redux/globalSlice";
 import { Button } from "antd";
+import dayjs from "dayjs";
 import { Pencil, Plus, Trash } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { NumericFormat } from "react-number-format";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import productApi from "../../api/productApi";
 
 const ImportManagement = () => {
   const dispatch = useDispatch();
@@ -26,29 +26,30 @@ const ImportManagement = () => {
   });
   const [data, setData] = useState({ items: [], total: 0 });
 
-  const [pendingGetAllProducts, getAllProducts] = useHandleAsyncRequest(
-    useCallback(async () => {
-      const { ok, body } = await productApi.getAllProduct({
-        pageSize: 10,
-        page: pagination.page,
-      });
-      if (ok && body) {
-        setData({ items: body.data, total: body.total });
-      }
-    }, [pagination])
-  );
+  const [pendingGetAllImportRecords, getAllImportRecords] =
+    useHandleAsyncRequest(
+      useCallback(async () => {
+        const { ok, body } = await importApi.getAllImportRecords({
+          pageSize: 10,
+          page: pagination.page,
+        });
+        if (ok && body) {
+          setData({ items: body.data, total: body.total });
+        }
+      }, [pagination])
+    );
 
   const onPageChange = useCallback((page) => {
     setPagination((prev) => ({ ...prev, page }));
   }, []);
 
-  const [pendingDelete, deleteProduct] = useHandleAsyncRequest(
+  const [pendingDelete, deleteImportRecord] = useHandleAsyncRequest(
     useCallback(
       async (id) => {
-        const { ok, errors } = await productApi.deleteProduct(id);
+        const { ok, errors } = await importApi.deleteImportRecord(id);
 
         if (ok) {
-          handleResponseSuccess("Xóa sản phẩm thành công", () =>
+          handleResponseSuccess("Xóa phiếu nhập thành công", () =>
             setPagination({
               page: 1,
             })
@@ -62,14 +63,14 @@ const ImportManagement = () => {
     )
   );
 
-  const onDeleteProduct = useCallback(
+  const onDeleteRecord = useCallback(
     (record) => {
       showConfirmModal({
-        message: `Bạn có chắc chắn muốn sản phẩm ${record.name} không?`,
-        onOk: () => deleteProduct(record.id),
+        message: `Bạn có chắc chắn muốn xóa phiếu nhập này không?`,
+        onOk: () => deleteImportRecord(record.id),
       });
     },
-    [showConfirmModal, deleteProduct]
+    [showConfirmModal, deleteImportRecord]
   );
 
   const columns = useMemo(
@@ -80,55 +81,33 @@ const ImportManagement = () => {
         render: (_, record) => <TableDataColumn label={record.id} />,
       },
       {
-        title: <TableHeaderColumn label="Tên sản phẩm" />,
-        render: (_, record) => <TableDataColumn label={record.name} />,
-      },
-      {
-        dataIndex: "cost",
-        title: <TableHeaderColumn label="Giá nhập" />,
-        render: (_, record) => (
+        dataIndex: "importDetails",
+        title: <TableHeaderColumn label="Sản phẩm" />,
+        render: (importDetails) => (
           <TableDataColumn
             label={
-              <NumericFormat
-                displayType="text"
-                value={record.cost}
-                thousandSeparator=","
-              />
+              <p className="text-wrap max-w-80">
+                {importDetails.map((record) => record.product.name).join(", ")}
+              </p>
             }
           />
         ),
       },
       {
-        title: <TableHeaderColumn label="Giá bán" />,
-        render: (_, record) => (
-          <TableDataColumn
-            label={
-              <NumericFormat
-                displayType="text"
-                value={record.price}
-                thousandSeparator=","
-              />
-            }
-          />
+        dataIndex: "user",
+        title: <TableHeaderColumn label="Người tạo" />,
+        render: (user) => (
+          <TableDataColumn label={`${user.firstName} ${user.lastName}`} />
         ),
       },
       {
-        title: <TableHeaderColumn label="Số lượng" />,
-        render: (_, record) => (
+        dataIndex: "createdDate",
+        title: <TableHeaderColumn label="Ngày tạo" />,
+        render: (createdDate) => (
           <TableDataColumn
-            label={
-              <NumericFormat
-                displayType="text"
-                value={record.quantity}
-                thousandSeparator=","
-              />
-            }
+            label={dayjs(new Date(createdDate)).format("DD/MM/YYYY HH:mm:ss")}
           />
         ),
-      },
-      {
-        title: <TableHeaderColumn label="Danh mục" />,
-        render: (_, record) => <TableDataColumn label={record.category.name} />,
       },
       {
         title: <TableHeaderColumn label="Thao tác" />,
@@ -139,14 +118,14 @@ const ImportManagement = () => {
               htmlType="button"
               icon={<Pencil size={20} />}
               className="min-w-[44px] min-h-[44px]"
-              onClick={() => navigate(`/products/${record.id}`)}
+              onClick={() => navigate(`/import/${record.id}`)}
             />
             <Button
               type="primary"
               htmlType="button"
               icon={<Trash size={20} />}
               className="min-w-[44px] min-h-[44px]"
-              onClick={() => onDeleteProduct(record)}
+              onClick={() => onDeleteRecord(record)}
               danger
             />
           </div>
@@ -154,12 +133,12 @@ const ImportManagement = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onDeleteProduct]
+    [onDeleteRecord]
   );
 
   useEffect(() => {
-    getAllProducts();
-  }, [getAllProducts]);
+    getAllImportRecords();
+  }, [getAllImportRecords]);
 
   useEffect(() => {
     if (pendingDelete) {
@@ -168,6 +147,13 @@ const ImportManagement = () => {
       dispatch(decrementLoading());
     }
   }, [pendingDelete, dispatch]);
+  useEffect(() => {
+    if (pendingGetAllImportRecords) {
+      dispatch(incrementLoading());
+    } else {
+      dispatch(decrementLoading());
+    }
+  }, [pendingGetAllImportRecords, dispatch]);
 
   return (
     <div className="w-full p-5">
@@ -178,7 +164,7 @@ const ImportManagement = () => {
             type="primary"
             icon={<Plus size={24} />}
             className="h-9 bg-brown-1 hover:!bg-brown-3 duration-300 text-sm font-medium"
-            onClick={() => navigate("/products/add")}
+            onClick={() => navigate("/import/create")}
           >
             Thêm phiếu nhập
           </Button>
@@ -187,7 +173,7 @@ const ImportManagement = () => {
 
       <Table
         columns={columns}
-        loading={pendingGetAllProducts}
+        loading={pendingGetAllImportRecords}
         data={data.items}
         onPageChange={onPageChange}
         page={pagination.page}
