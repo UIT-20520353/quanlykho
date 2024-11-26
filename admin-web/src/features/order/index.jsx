@@ -131,7 +131,7 @@ const OrderManagement = () => {
               htmlType="button"
               icon={<Pencil size={20} />}
               className="min-w-[44px] min-h-[44px]"
-              onClick={() => navigate(`/products/${record.id}`)}
+              onClick={() => navigate(`/orders/${record.id}`)}
             />
             <Button
               type="primary"

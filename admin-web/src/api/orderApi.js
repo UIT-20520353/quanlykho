@@ -11,8 +11,8 @@ const orderApi = {
   createOrder: (body) => {
     return handleResponse(axiosClient.post("/order", body));
   },
-  getProductDetail: (id) => {
-    return handleResponse(axiosClient.get(`/product/${id}`));
+  getOrderDetail: (id) => {
+    return handleResponse(axiosClient.get(`/order/${id}`));
   },
   updateProduct: (id, body) => {
     return handleResponse(axiosClient.put(`/product/${id}`, body));
