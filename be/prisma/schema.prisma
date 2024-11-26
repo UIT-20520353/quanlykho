@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role     @default(USER)
+  firstName String
+  lastName  String
+  isDelete  Boolean  @default(false)
+  Import    Import[] @relation("user")
+  Order     Order[]  @relation("user")
+}
+
+model Product {
+  id           Int            @id @default(autoincrement())
+  name         String
+  price        Decimal
+  cost         Decimal
+  quantity     Int
+  categoryId   Int
+  delete       Boolean        @default(false)
+  ImportDetail ImportDetail[]
+  OrderDetail  OrderDetail[]
+  category     Category       @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId], map: "Product_categoryId_fkey")
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  delete   Boolean   @default(false)
+  products Product[]
+}
+
+model Order {
+  id           Int           @id @default(autoincrement())
+  userId       Int
+  status       OrderStatus   @default(PENDING)
+  createdDate  DateTime
+  confirmDate  DateTime?
+  user         User          @relation("user", fields: [userId], references: [id])
+  orderDetails OrderDetail[]
+
+  @@index([userId], map: "Order_userId_fkey")
+}
+
+model OrderDetail {
+  id         Int     @id @default(autoincrement())
+  orderId    Int
+  productId  Int
+  totalPrice Decimal
+  quantity   Int
+  cost       Decimal
+  order      Order   @relation(fields: [orderId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId], map: "OrderDetail_orderId_fkey")
+  @@index([productId], map: "OrderDetail_productId_fkey")
+}
+
+model Import {
+  id            Int            @id @default(autoincrement())
+  userId        Int
+  createdDate   DateTime
+  confirmDate   DateTime?
+  user          User           @relation("user", fields: [userId], references: [id])
+  importDetails ImportDetail[]
+
+  @@index([userId], map: "Import_userId_fkey")
+}
+
+model ImportDetail {
+  id         Int     @id @default(autoincrement())
+  productId  Int
+  quantity   Int
+  totalPrice Decimal
+  importId   Int
+  import     Import  @relation(fields: [importId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
+
+  @@index([importId], map: "ImportDetail_importId_fkey")
+  @@index([productId], map: "ImportDetail_productId_fkey")
+}
+
+enum OrderStatus {
+  NEW
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum Role {
+  USER
+  ADMIN
+  STAFF
+}

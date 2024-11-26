@@ -1,0 +1,8 @@
+/be/node_modules/
+/admin-web/node_modules/
+
+/be/yarn.lock
+/be/package-lock.json
+
+/admin-web/yarn.lock
+/admin-web/package-lock.json
