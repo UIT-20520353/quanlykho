@@ -1,13 +1,17 @@
 import MainLayout from "@/components/layout/main-layout";
 import CategoryManagement from "@/features/category";
 import Dashboard from "@/features/dashboard";
+import ImportManagement from "@/features/import";
 import Login from "@/features/login";
+import OrderManagement from "@/features/order";
+import CreateOrder from "@/features/order/pages/create-order";
+import ProductManagement from "@/features/product";
+import AddProduct from "@/features/product/pages/add-product";
+import UpdateProduct from "@/features/product/pages/update-product";
 import StaffManagement from "@/features/staff";
 import CreateStaff from "@/features/staff/pages/create-staff";
 import EditStaff from "@/features/staff/pages/edit-staff";
 import { Route, Routes } from "react-router-dom";
-import ProductManagement from "./features/product";
-import AddProduct from "./features/product/pages/add-product";
 
 const App = () => {
   return (
@@ -19,7 +23,11 @@ const App = () => {
         <Route path="/users/:id" element={<EditStaff />} />
         <Route path="/users" element={<StaffManagement />} />
         <Route path="/products/add" element={<AddProduct />} />
+        <Route path="/products/:id" element={<UpdateProduct />} />
         <Route path="/products" element={<ProductManagement />} />
+        <Route path="/orders" element={<OrderManagement />} />
+        <Route path="/orders/create" element={<CreateOrder />} />
+        <Route path="/import" element={<ImportManagement />} />
         <Route index element={<Dashboard />} />
       </Route>
     </Routes>

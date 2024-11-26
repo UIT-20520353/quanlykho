@@ -11,7 +11,7 @@ const useHandleResponseError = () => {
   const { removeLocalStorage } = useLocalStorage();
 
   const handleResponseError = useCallback(
-    (error, onOk = undefined, status = 400) => {
+    (error, onOk = undefined) => {
       const instance = Modal.error({
         title: (
           <span className="text-base font-bold text-red-1 font-exo-2">

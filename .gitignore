@@ -6,3 +6,6 @@
 
 /admin-web/yarn.lock
 /admin-web/package-lock.json
+
+/be/.env
+/admin-web/.env

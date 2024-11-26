@@ -1,5 +1,6 @@
 import axios from "axios";
 import commonConstants from "@/app/constant";
+import env from "@/app/env";
 
 class Api {
   _instance;
@@ -7,7 +8,7 @@ class Api {
 
   constructor() {
     this._instance = axios.create({
-      baseURL: "http://localhost:3000/api/v1",
+      baseURL: env.VITE_BASE_URL,
       headers: {
         "Content-Type": "application/json",
       },

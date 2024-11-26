@@ -1,3 +1,5 @@
+import orderApi from "@/api/orderApi";
+import productApi from "@/api/productApi";
 import Table from "@/components/table/table";
 import TableDataColumn from "@/components/table/table-data-column";
 import TableHeaderColumn from "@/components/table/table-header-column";
@@ -5,16 +7,16 @@ import useConfirmModal from "@/hooks/useConfirmModal";
 import useHandleAsyncRequest from "@/hooks/useHandleAsyncRequest";
 import useHandleResponseError from "@/hooks/useHandleResponseError";
 import useHandleResponseSuccess from "@/hooks/useHandleResponseSuccess";
+import { OrderStatusMapper } from "@/mappers/order";
 import { decrementLoading, incrementLoading } from "@/redux/globalSlice";
 import { Button } from "antd";
+import dayjs from "dayjs";
 import { Pencil, Plus, Trash } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { NumericFormat } from "react-number-format";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import productApi from "../../api/productApi";
 
-const ProductManagement = () => {
+const OrderManagement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleResponseError = useHandleResponseError();
@@ -26,9 +28,9 @@ const ProductManagement = () => {
   });
   const [data, setData] = useState({ items: [], total: 0 });
 
-  const [pendingGetAllProducts, getAllProducts] = useHandleAsyncRequest(
+  const [pendingGetAllOrders, getAllOrders] = useHandleAsyncRequest(
     useCallback(async () => {
-      const { ok, body } = await productApi.getAllProduct({
+      const { ok, body } = await orderApi.getAllOrders({
         pageSize: 10,
         page: pagination.page,
       });
@@ -80,56 +82,46 @@ const ProductManagement = () => {
         render: (_, record) => <TableDataColumn label={record.id} />,
       },
       {
-        title: <TableHeaderColumn label="Tên sản phẩm" />,
-        render: (_, record) => <TableDataColumn label={record.name} />,
+        dataIndex: "user",
+        title: <TableHeaderColumn label="Người tạo" />,
+        render: (user) => (
+          <TableDataColumn label={`${user.firstName} ${user.lastName}`} />
+        ),
       },
       {
-        dataIndex: "cost",
-        title: <TableHeaderColumn label="Giá nhập" />,
-        render: (_, record) => (
+        dataIndex: "createdDate",
+        title: <TableHeaderColumn label="Ngày tạo" />,
+        render: (createdDate) => (
           <TableDataColumn
-            label={
-              <NumericFormat
-                displayType="text"
-                value={record.cost}
-                thousandSeparator=","
-              />
-            }
+            label={dayjs(new Date(createdDate)).format("DD/MM/YYYY HH:mm:ss")}
           />
         ),
       },
       {
-        title: <TableHeaderColumn label="Giá bán" />,
-        render: (_, record) => (
-          <TableDataColumn
-            label={
-              <NumericFormat
-                displayType="text"
-                value={record.price}
-                thousandSeparator=","
-              />
-            }
-          />
+        dataIndex: "status",
+        title: <TableHeaderColumn label="Trạng thái" />,
+        render: (status) => (
+          <TableDataColumn label={OrderStatusMapper[status]} />
         ),
       },
-      {
-        title: <TableHeaderColumn label="Số lượng" />,
-        render: (_, record) => (
-          <TableDataColumn
-            label={
-              <NumericFormat
-                displayType="text"
-                value={record.quantity}
-                thousandSeparator=","
-              />
-            }
-          />
-        ),
-      },
-      {
-        title: <TableHeaderColumn label="Danh mục" />,
-        render: (_, record) => <TableDataColumn label={record.category.name} />,
-      },
+      // {
+      //   title: <TableHeaderColumn label="Số lượng" />,
+      //   render: (_, record) => (
+      //     <TableDataColumn
+      //       label={
+      //         <NumericFormat
+      //           displayType="text"
+      //           value={record.quantity}
+      //           thousandSeparator=","
+      //         />
+      //       }
+      //     />
+      //   ),
+      // },
+      // {
+      //   title: <TableHeaderColumn label="Danh mục" />,
+      //   render: (_, record) => <TableDataColumn label={record.category.name} />,
+      // },
       {
         title: <TableHeaderColumn label="Thao tác" />,
         render: (_, record) => (
@@ -158,8 +150,8 @@ const ProductManagement = () => {
   );
 
   useEffect(() => {
-    getAllProducts();
-  }, [getAllProducts]);
+    getAllOrders();
+  }, [getAllOrders]);
 
   useEffect(() => {
     if (pendingDelete) {
@@ -172,22 +164,22 @@ const ProductManagement = () => {
   return (
     <div className="w-full p-5">
       <div className="flex items-center justify-between w-full mb-4">
-        <h3 className="text-xl font-semibold">Danh sách sản phẩm</h3>
+        <h3 className="text-xl font-semibold">Danh sách đơn hàng</h3>
         <div className="flex items-center gap-3">
           <Button
             type="primary"
             icon={<Plus size={24} />}
             className="h-9 bg-brown-1 hover:!bg-brown-3 duration-300 text-sm font-medium"
-            onClick={() => navigate("/products/add")}
+            onClick={() => navigate("/orders/create")}
           >
-            Thêm sản phẩm
+            Thêm đơn hàng
           </Button>
         </div>
       </div>
 
       <Table
         columns={columns}
-        loading={pendingGetAllProducts}
+        loading={pendingGetAllOrders}
         data={data.items}
         onPageChange={onPageChange}
         page={pagination.page}
@@ -198,4 +190,4 @@ const ProductManagement = () => {
   );
 };
 
-export default ProductManagement;
+export default OrderManagement;

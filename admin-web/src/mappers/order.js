@@ -12,4 +12,11 @@ const StatusColorMapper = {
   CANCEL: "red",
 };
 
-export { StatusMapper, StatusColorMapper };
+const OrderStatusMapper = {
+  NEW: "Mới",
+  PENDING: "Chờ xác nhận",
+  CONFIRMED: "Đã xác nhận",
+  CANCELLED: "Đã hủy",
+};
+
+export { StatusMapper, StatusColorMapper, OrderStatusMapper };

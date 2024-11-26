@@ -1,15 +1,15 @@
 import axiosClient, { handleResponse } from "./axiosClient";
 
-const productApi = {
-  getAllProduct: (params) => {
+const orderApi = {
+  getAllOrders: (params) => {
     return handleResponse(
-      axiosClient.get("/product", {
+      axiosClient.get("/order", {
         params,
       })
     );
   },
-  createProduct: (body) => {
-    return handleResponse(axiosClient.post("/product", body));
+  createOrder: (body) => {
+    return handleResponse(axiosClient.post("/order", body));
   },
   getProductDetail: (id) => {
     return handleResponse(axiosClient.get(`/product/${id}`));
@@ -22,4 +22,4 @@ const productApi = {
   },
 };
 
-export default productApi;
+export default orderApi;

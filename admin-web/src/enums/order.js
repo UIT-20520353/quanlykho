@@ -5,4 +5,11 @@ const EStatus = {
   CANCEL: "CANCEL",
 };
 
-export { EStatus };
+const EOrderStatus = {
+  NEW: "NEW",
+  PENDING: "PENDING",
+  CONFIRMED: "CONFIRMED",
+  CANCELLED: "CANCELLED",
+};
+
+export { EStatus, EOrderStatus };

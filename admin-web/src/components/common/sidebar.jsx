@@ -1,15 +1,22 @@
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { setProfile } from "@/redux/globalSlice";
 import clsx from "clsx";
-import { House, LogOut, Menu, PackageOpen, Users } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  House,
+  LogOut,
+  Menu,
+  PackageOpen,
+  ShoppingBag,
+  Warehouse,
+  Users,
+} from "lucide-react";
+import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { removeLocalStorage } = useLocalStorage();
-  const { profile } = useSelector((state) => state.global);
 
   const menus = [
     {
@@ -31,6 +38,16 @@ const Sidebar = () => {
       label: "Sản phẩm",
       icon: <PackageOpen width={24} height={24} />,
       link: "/products",
+    },
+    {
+      label: "Đơn hàng",
+      icon: <ShoppingBag width={24} height={24} />,
+      link: "/orders",
+    },
+    {
+      label: "Nhập hàng",
+      icon: <Warehouse width={24} height={24} />,
+      link: "/import",
     },
 
     // {

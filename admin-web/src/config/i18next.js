@@ -29,6 +29,7 @@ i18n.use(initReactI18next).init({
             },
             form: {
               "ingredient-required": "Vui lòng thêm nguyên liệu",
+              "product-required": "Vui lòng thêm sản phẩm",
             },
           },
           category: {
